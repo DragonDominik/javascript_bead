@@ -1,0 +1,237 @@
+:root {
+    --cream: #e9d6a4;
+    --dark-cream: #DFC37C;
+    --super-dark-cream: #836720;
+    --brown: #6E260E;
+    --dark-blue: #040f21;
+}
+
+* {
+    font-size: calc(12px + 1vw);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* MENU */
+#mainMenu {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)),
+        url('./resources/menuBackground.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    text-align: center;
+    color: var(--cream)
+}
+
+#menuCol {
+    background-color: var(--dark-blue);
+    width: 30%;
+    min-width: 400px;
+    margin-left: 5%;
+    height: 100%;
+    padding: 0 20px;
+}
+
+#menuLogo {
+    margin-top: 30px;
+    width: 80%;
+    height: auto;
+}
+
+#welcomeText {
+    margin-top: 5px;
+    font-size: 1.5rem;
+    font-variant: small-caps;
+}
+
+#welcomeText span {
+    font-size: 1.5rem;
+    font-variant: small-caps;
+}
+
+#menuBtns {
+    margin-top: 20px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#menuBtns button {
+    width: 80%;
+    flex: 1;
+    min-height: 50px;
+    border-radius: 24px;
+    background-color: var(--cream);
+    border: none;
+    box-shadow: 6px 4px 0 0 var(--brown);
+    color: var(--dark-blue);
+}
+
+#menuBtns button:hover {
+    background-color: var(--dark-cream);
+    transform: scale(1.05);
+    transition: all 0.8s;
+}
+
+#menuBtns button:active {
+    box-shadow: 0 0 0 0 var(--brown);
+    transform: translateY(+5px);
+    transition: all 0.3s;
+}
+
+
+/*############################### Name Change Menu ###############################*/
+
+/* Background */
+#setNameMenu {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+/* Container */
+#setNameMenu .setNameMenuPart {
+    box-sizing: border-box;
+    background-color: var(--cream);
+    color: var(--brown);
+    padding: 40px 50px;
+    border-radius: 16px;
+    box-shadow: 6px 6px 0 0 var(--brown);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    text-align: center;
+    transform: translate(-50%, -50%) scale(0.95);
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    width: 40%;
+    height: 30%;
+    max-width: 90vw;
+}
+
+/* open animation */
+#setNameMenu.show {
+    display: flex;
+    opacity: 1;
+}
+
+#setNameMenu.show .setNameMenuPart {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Input field */
+#setNameMenu input {
+    padding: 12px 18px;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 24px;
+    border: 2px solid var(--brown);
+    outline: none;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+#setNameMenu input:focus {
+    border-color: var(--brown);
+    box-shadow: 0 0 0 3px rgba(165, 105, 79, 0.3);
+}
+
+#setNameMenu .buttonRow {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+#setNameMenu button {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid var(--brown);
+    background: var(--brown);
+    color: var(--cream);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#setNameMenu button:hover {
+    background: var(--cream);
+    color: var(--brown);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 0 var(--brown);
+}
+
+#setNameMenu button:active {
+    transform: translateY(0);
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+#setNameMenu .errorMsg {
+    max-width: 100%;
+    color: var(--brown);
+    font-size: 0.7rem;
+    word-wrap: break-word;
+}
+
+/* Small devices (sd) — 0px up (mobile-first) */
+@media (max-width: 767px) {
+    #menuCol {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-width: 100%;
+    }
+
+    #welcomeText {
+        margin-top: 10px;
+        padding: 0 20px;
+    }
+
+    #menuBtns button {
+        font-weight: bold;
+    }
+
+    #setNameMenu .setNameMenuPart {
+        width: 90vw;
+        height: 40%;
+    }
+
+    #setNameMenu .errorMsg {
+        font-size: 1rem;
+    }
+}
+
+/* Medium devices (md) — 768px to 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {}
+
+/* Large devices (lg) — 1024px and up */
+@media (min-width: 1024px) {}

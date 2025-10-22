@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Station: Budapest</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="mainMenu">
+        <!-- Menu -->
+        <div id="menuCol">
+            <img src="./resources/logo.webp" id="menuLogo">
+            <div id="welcomeText"><span></span>Time to make some railways</div>
+            <div id="menuBtns">
+                <button>Start Game</button>
+                <button>Stats</button>
+                <button id="nameChangeBtn">Change Name</button>
+                <button>Documentation</button>
+            </div>
+        </div>
+
+        <!-- Name Set Menu -->
+        <div id="setNameMenu">
+            <div class="setNameMenuPart">
+                <div class="title">Please set your username!</div>
+                <input type="text" placeholder="Add name..." />
+                <div class="buttonRow">
+                    <button class="saveBtn">Save</button>
+                    <button class="cancelBtn">Cancel</button>
+                </div>
+                <div class="errorMsg"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

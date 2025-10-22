@@ -1,5 +1,5 @@
-Hallgató neve: ....
-Hallgató Neptun kódja: ....
+Hallgató neve: Dragon Dominik
+Hallgató Neptun kódja: EC9VQV
 
 Ezt a megoldást a fent nevezett hallgató küldte be és készítette a Webprogramozás kurzus "JavaScript beadandó" számonkéréséhez.
 
