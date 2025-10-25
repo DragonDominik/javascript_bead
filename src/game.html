@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        #gameField {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            background-color: white;
+        }
+
+        #gameArea {
+            border: 2px solid black;
+        }
+
+        #gameMsg {
+            font-size: 2rem;
+            color: red;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gameField">
+        <canvas id="gameArea" width="700" height="700"></canvas>
+        <div id="gameMsg"></div>
+    </div>
+    <script>
+        // GAME LOGIC FUNCTIONS #######################################
+
+        const msgBox = document.querySelector('#gameMsg');
+
+        const canvas = document.querySelector('#gameArea');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.width = 700 * dpr;
+        canvas.height = 700 * dpr;
+        canvas.style.width = '700px';
+        canvas.style.height = '700px';
+
+        ctx.scale(dpr, dpr);
+        ctx.imageSmoothingEnabled = true;
+
+        const rows = 10;
+        const cols = 10;
+        const cellSize = 700 / rows;
+
+        let prevSelectedCell = {
+            row: 0,
+            col: 0,
+            isSelected: false
+        };
+
+        // Draws starting board with grid
+        function drawGame() {
+            ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "black"
+            ctx.lineWidth = 2;
+
+            for (let i = 1; i < rows; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellSize);
+                ctx.lineTo(canvas.width, i * cellSize);
+                ctx.stroke();
+            }
+
+            for (let i = 1; i < cols; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * cellSize, 0);
+                ctx.lineTo(i * cellSize, canvas.height);
+                ctx.stroke();
+            }
+        }
+        const bgImage = new Image();
+        bgImage.src = "./resources/testimg.png"
+        bgImage.onload = () => {
+            drawGame();
+        };
+
+
+        let drawnLines = [];
+        canvas.addEventListener('click', cellClicked);
+
+        //run if cell clicked
+        function cellClicked(clickedCell) {
+            //find where user clicked on canvas
+            const canvasDetails = canvas.getBoundingClientRect();
+            const x = clickedCell.clientX - canvasDetails.left;
+            const y = clickedCell.clientY - canvasDetails.top;
+
+            //which cell is that?
+            const currentCell = {
+                row: Math.floor(y / cellSize),
+                col: Math.floor(x / cellSize),
+            };
+
+            if (!prevSelectedCell.isSelected) {
+                prevSelectedCell.row = currentCell.row;
+                prevSelectedCell.col = currentCell.col;
+                prevSelectedCell.isSelected = true;
+            } else {
+                prevSelectedCell.isSelected = false;
+
+                checkValidity(prevSelectedCell, currentCell);
+            }
+        }
+
+        //Check if two cells valid for connecting, if yes draws connection
+        function checkValidity(cellFrom, cellTo) {
+            if (cellFrom.row === cellTo.row && cellFrom.col === cellTo.col) {
+                prevSelectedCell.isSelected = true;
+                return;
+            }
+
+            if (!cellGrid[cellFrom.row][cellFrom.col].isStation || !cellGrid[cellTo.row][cellTo.col].isStation) {
+                msgBox.textContent = 'You can only draw lines between stations';
+                return;
+            }
+            msgBox.textContent = '';
+
+            differenceRow = Math.abs(cellFrom.row - cellTo.row);
+            differenceCol = Math.abs(cellFrom.col - cellTo.col);
+
+            //45 degree
+            if (differenceRow == differenceCol) {
+                checkCellsBetweenValidity(cellFrom, cellTo);
+            }
+            //90 degree
+            else if (differenceRow == 0 || differenceCol == 0) {
+                checkCellsBetweenValidity(cellFrom, cellTo);
+            }
+            else {
+                msgBox.textContent = 'Only 45 and 90 degree lines are allowed';
+
+            }
+        }
+
+        //check every cell between to see if valid line
+        function checkCellsBetweenValidity(cellFrom, cellTo) {
+            let correct = true;
+
+            const rowStep = cellTo.row > cellFrom.row ? 1 : (cellTo.row < cellFrom.row ? -1 : 0);
+            const colStep = cellTo.col > cellFrom.col ? 1 : (cellTo.col < cellFrom.col ? -1 : 0);
+
+            let row = cellFrom.row + rowStep;
+            let col = cellFrom.col + colStep;
+
+            while (true) {
+                if (row === cellTo.row && col === cellTo.col) break;
+
+                if (cellGrid[row][col].isStation) {
+                    correct = false;
+                    msgBox.textContent = 'There can be no stations in a line';
+                    break;
+                }
+
+                row += rowStep;
+                col += colStep;
+            }
+
+            if (correct) {
+                drawLine(cellFrom, cellTo)
+            }
+        }
+
+
+        //Draws line between two cells
+        function drawLine(cellFrom, cellTo) {
+            ctx.strokeStyle = lines[currentRound.roundId].color;
+            ctx.lineWidth = 5;
+
+            ctx.beginPath();
+            ctx.moveTo(cellFrom.col * cellSize + cellSize / 2, cellFrom.row * cellSize + cellSize / 2);
+            ctx.lineTo(cellTo.col * cellSize + cellSize / 2, cellTo.row * cellSize + cellSize / 2);
+            ctx.stroke();
+
+            drawnLines.push({
+                cellFrom: { row: cellFrom.row, col: cellFrom.col },
+                cellTo: { row: cellTo.row, col: cellTo.col }
+            });
+
+            drawImageInCell(cellGrid[cellFrom.row][cellFrom.col]);
+            drawImageInCell(cellGrid[cellTo.row][cellTo.col]);
+        }
+
+
+        //Draws img in cell
+        const stationImg = new Image();
+        stationImg.src = "./resources/station.png";
+        function drawImageInCell(cellData) {
+            ctx.drawImage(stationImg, cellData.col * cellSize, cellData.row * cellSize, cellSize, cellSize);
+        }
+
+        // SET GAME START ##################################################################################
+        let lines = [];
+        let stations = [];
+
+        let remainingLines = [0, 1, 2, 3];
+
+        // For keeping up whats in what cell
+        let cellGrid = [];
+        for (let r = 0; r < rows; r++) {
+            let row = [];
+            for (let c = 0; c < cols; c++) {
+                row.push({
+                    row: r,
+                    col: c,
+                    lines: [],
+                    isStation: false,
+                    stationType: null
+                });
+            }
+            cellGrid.push(row);
+        }
+
+        //load jsons
+        async function loadData() {
+            const res1 = await fetch('./game/data/lines.json');
+            lines = await res1.json();
+
+            const res2 = await fetch('./game/data/stations-min.json');
+            stations = await res2.json();
+        }
+        async function setUpStart() {
+            await loadData();
+
+            for (let i = 0; i < stations.length; i++) {
+                cellGrid[stations[i].x][stations[i].y].isStation = true;
+                cellGrid[stations[i].x][stations[i].y].stationType = stations[i].type;
+                drawImageInCell(cellGrid[stations[i].x][stations[i].y]);
+            }
+        }
+        setUpStart();
+
+        function startNewRound() {
+            const randomIndex = Math.floor(Math.random() * remainingLines.length);
+            const selectedLine = remainingLines[randomIndex];
+            console.log(cellGrid);
+            remainingLines.splice(randomIndex, 1);
+            currentRound = {
+                roundId: selectedLine,
+                moveNumber: 0
+            }
+        }
+
+        startNewRound();
+    </script>
+</body>
+
+</html>
